@@ -5,7 +5,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // サーバーから PR データを取得
   const res = await fetch('/api/pr');
-  const prs = await res.json();
+  const all = await res.json();
+
+  // Big3（ベンチプレス・スクワット・デッドリフト）のみ表示
+  const BIG3 = ['ベンチプレス', 'スクワット', 'デッドリフト'];
+  const prs  = all.filter(pr => BIG3.includes(pr.syumoku));
 
   renderPRCards(prs);
   renderVolumeChart(prs);

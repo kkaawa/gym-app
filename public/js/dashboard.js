@@ -10,16 +10,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   const res  = await fetch('/api/dashboard');
   const data = await res.json();
 
-  // ---------- 今日のトレーニング状態 ----------
-  const statusEl = document.getElementById('today-status');
-  if (data.today.hasTraining) {
-    statusEl.innerHTML = '<span style="font-family:Oswald,sans-serif;letter-spacing:3px;font-size:13px;color:#555;">TODAY</span><br>トレーニング済み';
-    statusEl.style.color = '#D4AF37';
-  } else {
-    statusEl.innerHTML = '<span style="font-family:Oswald,sans-serif;letter-spacing:3px;font-size:13px;color:#333;">TODAY</span><br>REST DAY';
-    statusEl.style.color = '#444';
-  }
-
   // ---------- 数値カードに値をセット ----------
   document.getElementById('today-sets').textContent   = data.today.sets;
   document.getElementById('today-volume').textContent = data.today.volume.toLocaleString();

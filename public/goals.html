@@ -50,21 +50,35 @@
     <div style="margin-bottom:32px;">
       <h2>新しい目標を追加</h2>
       <form id="goal-form">
+        <!-- ① 部位選択 -->
         <div>
-          <label>種目</label>
-          <input type="text" id="syumoku" list="syumoku-list" placeholder="種目を選択または入力" required>
-          <datalist id="syumoku-list">
-            <option value="ベンチプレス">
-            <option value="スクワット">
-            <option value="デッドリフト">
-            <option value="ショルダープレス">
-            <option value="ラットプルダウン">
-            <option value="懸垂">
-            <option value="アームカール">
-            <option value="トライセプスプレスダウン">
-            <option value="レッグプレス">
-          </datalist>
+          <label>部位</label>
+          <select id="category-select">
+            <option value="">部位を選択してください</option>
+            <option value="胸">胸</option>
+            <option value="肩">肩</option>
+            <option value="足">足</option>
+            <option value="腕">腕</option>
+            <option value="背中">背中</option>
+            <option value="free">自由入力</option>
+          </select>
         </div>
+
+        <!-- ② 種目選択 -->
+        <div id="exercise-select-area" style="display:none;">
+          <label>種目</label>
+          <select id="exercise-select">
+            <option value="">種目を選択してください</option>
+          </select>
+        </div>
+
+        <!-- ③ 自由入力 -->
+        <div id="exercise-free-area" style="display:none;">
+          <label>種目（自由入力）</label>
+          <input type="text" id="exercise-free" placeholder="例: ケーブルクロスオーバー">
+        </div>
+
+        <input type="hidden" id="syumoku">
         <div>
           <label>目標重量（kg）</label>
           <input type="number" id="target_weight" step="0.5" min="0" placeholder="例: 100" required>
@@ -82,6 +96,7 @@
     <div id="goals-container">読み込み中...</div>
   </div>
 
+  <script src="/js/exercises.js"></script>
   <script src="/js/nav.js"></script>
   <script src="/js/goals.js"></script>
 </body>

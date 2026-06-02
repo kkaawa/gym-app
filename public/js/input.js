@@ -7,19 +7,68 @@ document.addEventListener('DOMContentLoaded', () => {
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('date').value = today;
 
+  // ① 部位プルダウンが変わったら種目プルダウンを更新
+  document.getElementById('category-select').addEventListener('change', (e) => {
+    const category       = e.target.value;
+    const exerciseArea   = document.getElementById('exercise-select-area');
+    const freeArea       = document.getElementById('exercise-free-area');
+    const exerciseSelect = document.getElementById('exercise-select');
+
+    // 一旦全部隠す
+    exerciseArea.style.display = 'none';
+    freeArea.style.display     = 'none';
+    document.getElementById('syumoku').value = '';
+
+    if (category === 'free') {
+      // 自由入力モード
+      freeArea.style.display = 'block';
+    } else if (category) {
+      // 選択した部位の種目リストを生成
+      const group = EXERCISE_DATA.find(g => g.category === category);
+      exerciseSelect.innerHTML = '<option value="">種目を選択してください</option>';
+      if (group) {
+        group.exercises.forEach(name => {
+          const opt       = document.createElement('option');
+          opt.value       = name;
+          opt.textContent = name;
+          exerciseSelect.appendChild(opt);
+        });
+      }
+      exerciseArea.style.display = 'block';
+    }
+  });
+
+  // ② 種目プルダウンが変わったら hidden input にセット
+  document.getElementById('exercise-select').addEventListener('change', (e) => {
+    document.getElementById('syumoku').value = e.target.value;
+  });
+
+  // ③ 自由入力が変わったら hidden input にセット
+  document.getElementById('exercise-free').addEventListener('input', (e) => {
+    document.getElementById('syumoku').value = e.target.value;
+  });
+
   // フォームの送信イベントを監視
   document.getElementById('record-form').addEventListener('submit', async (e) => {
     // ブラウザのデフォルト送信（ページリロード）を止める
     e.preventDefault();
 
+    // 種目が選択されているかチェック
+    const syumoku = document.getElementById('syumoku').value;
+    if (!syumoku) {
+      showMessage('種目を選択または入力してください', 'error');
+      return;
+    }
+
     // フォームの値を取得
     const data = {
-      date    : document.getElementById('date').value,
-      syumoku : document.getElementById('syumoku').value,
-      omosa   : parseFloat(document.getElementById('omosa').value),
-      reps    : parseInt(document.getElementById('reps').value),
-      memo    : document.getElementById('memo').value,
-      oikomi  : document.getElementById('oikomi').checked ? 1 : 0,
+      date          : document.getElementById('date').value,
+      training_type : document.getElementById('training-type').value,
+      syumoku       : syumoku,
+      omosa         : parseFloat(document.getElementById('omosa').value),
+      reps          : parseInt(document.getElementById('reps').value),
+      memo          : document.getElementById('memo').value,
+      oikomi        : document.getElementById('oikomi').checked ? 1 : 0,
     };
 
     // fetch でサーバーにPOSTリクエストを送る
@@ -36,17 +85,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 成功したらフォームをリセット（日付は今日のまま残す）
     if (res.ok) {
+      // training_type と category は保持（同日に連続入力しやすくするため）
+      const savedTrainingType = document.getElementById('training-type').value;
+      const savedCategory     = document.getElementById('category-select').value;
+
       document.getElementById('record-form').reset();
-      document.getElementById('date').value = today;
+      document.getElementById('date').value           = today;
+      document.getElementById('training-type').value  = savedTrainingType;
+
+      // 部位の選択を復元して種目リストも再表示
+      document.getElementById('category-select').value = savedCategory;
+      document.getElementById('category-select').dispatchEvent(new Event('change'));
     }
   });
 });
 
 // メッセージを画面に表示するヘルパー関数
 function showMessage(text, type) {
-  const el = document.getElementById('message');
-  el.innerHTML = `<div class="message ${type}">${text}</div>`;
-
-  // 3秒後に自動で消す
-  setTimeout(() => { el.innerHTML = ''; }, 3000);
+  // ページ上部とボタン下の両方に表示する
+  ['message', 'message-bottom'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = `<div class="message ${type}">${text}</div>`;
+    setTimeout(() => { el.innerHTML = ''; }, 3000);
+  });
 }

@@ -23,21 +23,48 @@
       </div>
 
       <div>
-        <label for="syumoku">種目</label>
-        <!-- datalist を使うとリストから選択 + 自由入力の両方ができる -->
-        <input type="text" id="syumoku" list="syumoku-list" placeholder="種目を選択または入力" required>
-        <datalist id="syumoku-list">
-          <option value="ベンチプレス">
-          <option value="スクワット">
-          <option value="デッドリフト">
-          <option value="ショルダープレス">
-          <option value="ラットプルダウン">
-          <option value="懸垂">
-          <option value="アームカール">
-          <option value="トライセプスプレスダウン">
-          <option value="レッグプレス">
-        </datalist>
+        <label for="training-type">今日は何の日</label>
+        <select id="training-type">
+          <option value="">選択してください（任意）</option>
+          <option value="胸">胸 — CHEST</option>
+          <option value="背中">背中 — BACK</option>
+          <option value="肩">肩 — SHOULDER</option>
+          <option value="腕">腕 — ARMS</option>
+          <option value="足">足 — LEGS</option>
+          <option value="全身">全身 — FULL BODY</option>
+        </select>
       </div>
+
+      <!-- ① 部位を選ぶ -->
+      <div>
+        <label for="category-select">部位</label>
+        <select id="category-select">
+          <option value="">部位を選択してください</option>
+          <option value="胸">胸</option>
+          <option value="肩">肩</option>
+          <option value="足">足</option>
+          <option value="腕">腕</option>
+          <option value="背中">背中</option>
+          <option value="free">自由入力</option>
+        </select>
+      </div>
+
+      <!-- ② 部位を選んだら種目が出る -->
+      <div id="exercise-select-area" style="display:none;">
+        <label for="exercise-select">種目</label>
+        <select id="exercise-select">
+          <option value="">種目を選択してください</option>
+        </select>
+      </div>
+
+      <!-- ③ 自由入力を選んだら表示 -->
+      <div id="exercise-free-area" style="display:none;">
+        <label for="exercise-free">種目（自由入力）</label>
+        <input type="text" id="exercise-free" placeholder="例: ケーブルクロスオーバー">
+      </div>
+
+      <!-- 実際に送信される種目名（JSがセットする） -->
+      <input type="hidden" id="syumoku">
 
       <div>
         <label for="omosa">重量（kg）</label>
@@ -62,9 +89,13 @@
       </div>
 
       <button type="submit" class="btn btn-primary">記録を保存する</button>
+
+      <!-- ボタンの直下にもメッセージを表示 -->
+      <div id="message-bottom"></div>
     </form>
   </div>
 
+  <script src="/js/exercises.js"></script>
   <script src="/js/nav.js"></script>
   <script src="/js/input.js"></script>
 </body>

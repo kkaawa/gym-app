@@ -22,4 +22,11 @@ db.exec(`
   );
 `);
 
+// training_type カラムがなければ追加（既存DBへのマイグレーション）
+try {
+  db.exec(`ALTER TABLE training_records ADD COLUMN training_type TEXT DEFAULT ''`);
+} catch(e) {
+  // すでにカラムが存在する場合は何もしない
+}
+
 module.exports = db;

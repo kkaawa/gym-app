@@ -51,7 +51,6 @@ async function generateCard() {
   const age    = document.getElementById('c-age').value     || '—';
   const freq   = document.getElementById('c-freq').value    || '—';
   const spec   = document.getElementById('c-spec').value;
-  const lifterId = document.getElementById('c-id').value    || '#GROWTH_0001';
 
   // サーバーから集計データを取得
   const res  = await fetch('/api/card');
@@ -100,7 +99,7 @@ async function generateCard() {
   document.getElementById('p-exercises').textContent = prs.length; // 記録した種目数
 
   // ---------- フッター ----------
-  document.getElementById('p-lifter-id').textContent = lifterId;
+  // lifterIdは削除済み
 
   // ---------- カードを表示 ----------
   document.getElementById('card-wrap').style.display  = 'block';

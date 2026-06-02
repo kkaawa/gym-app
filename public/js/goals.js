@@ -4,6 +4,41 @@
 document.addEventListener('DOMContentLoaded', () => {
   loadGoals();
 
+  // 部位 → 種目の2段階選択
+  document.getElementById('category-select').addEventListener('change', (e) => {
+    const category       = e.target.value;
+    const exerciseArea   = document.getElementById('exercise-select-area');
+    const freeArea       = document.getElementById('exercise-free-area');
+    const exerciseSelect = document.getElementById('exercise-select');
+
+    exerciseArea.style.display = 'none';
+    freeArea.style.display     = 'none';
+    document.getElementById('syumoku').value = '';
+
+    if (category === 'free') {
+      freeArea.style.display = 'block';
+    } else if (category) {
+      const group = EXERCISE_DATA.find(g => g.category === category);
+      exerciseSelect.innerHTML = '<option value="">種目を選択してください</option>';
+      if (group) {
+        group.exercises.forEach(name => {
+          const opt = document.createElement('option');
+          opt.value = opt.textContent = name;
+          exerciseSelect.appendChild(opt);
+        });
+      }
+      exerciseArea.style.display = 'block';
+    }
+  });
+
+  document.getElementById('exercise-select').addEventListener('change', (e) => {
+    document.getElementById('syumoku').value = e.target.value;
+  });
+
+  document.getElementById('exercise-free').addEventListener('input', (e) => {
+    document.getElementById('syumoku').value = e.target.value;
+  });
+
   // 目標追加フォームの送信
   document.getElementById('goal-form').addEventListener('submit', async (e) => {
     e.preventDefault();

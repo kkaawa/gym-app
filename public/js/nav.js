@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ブランド名 + リンク を挿入
   navEl.innerHTML = `
     <nav>
-      <span class="nav-brand">G — GROWTH GYM LOG</span>
+      <span class="nav-brand">G — GROWTH</span>
       ${linksHTML}
     </nav>
   `;
