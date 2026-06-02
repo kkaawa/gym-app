@@ -314,111 +314,118 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   /* ---------- ナビゲーション ---------- */
   nav {
     height: auto;
-    min-height: 48px;
-    padding: 0 12px;
-    /* 横スクロール：リンクがはみ出しても横にスワイプして見られる */
+    min-height: 56px;
+    padding: 0 16px;
     overflow-x: auto;
-    -webkit-overflow-scrolling: touch; /* iOSでのスムーズスクロール */
-    scrollbar-width: none;             /* Firefoxでスクロールバーを非表示 */
-    flex-wrap: nowrap;                 /* 折り返さずに一行に */
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex-wrap: nowrap;
   }
-  nav::-webkit-scrollbar { display: none; } /* Chromeでスクロールバーを非表示 */
+  nav::-webkit-scrollbar { display: none; }
 
   .nav-brand {
-    font-size: 11px;
+    font-size: 13px;
     letter-spacing: 2px;
-    padding-right: 12px;
-    margin-right: 4px;
+    padding-right: 14px;
+    margin-right: 6px;
     white-space: nowrap;
   }
 
   nav a {
-    font-size: 10px;
+    font-size: 13px;   /* 10px → 13px に */
     letter-spacing: 1px;
-    padding: 0 10px;
-    height: 48px;
-    white-space: nowrap; /* リンク文字を折り返さない */
+    padding: 0 14px;
+    height: 56px;
+    white-space: nowrap;
   }
 
   /* ---------- ページレイアウト ---------- */
   .page {
-    padding: 20px 12px;
+    padding: 24px 16px;
   }
 
   h1 {
-    font-size: 17px;
+    font-size: 20px;   /* 17px → 20px */
     letter-spacing: 3px;
     margin-bottom: 20px;
   }
 
   h2 {
-    font-size: 12px;
+    font-size: 15px;   /* 12px → 15px */
     letter-spacing: 2px;
   }
 
   /* ---------- 数値カードグリッド ---------- */
   .card-grid {
-    /* 5列 → 2列に変更 */
     grid-template-columns: repeat(2, 1fr);
   }
 
   .stat-card {
-    padding: 14px 10px;
+    padding: 18px 12px;
   }
 
   .stat-card .value {
-    font-size: 26px;
+    font-size: 32px;   /* 26px → 32px */
   }
 
   .stat-card .label {
-    font-size: 8px;
-    letter-spacing: 2px;
+    font-size: 11px;   /* 8px → 11px */
+    letter-spacing: 1px;
+  }
+
+  .stat-card .unit {
+    font-size: 13px;
   }
 
   /* ---------- カード ---------- */
   .card {
-    padding: 14px;
+    padding: 16px;
   }
 
   /* ---------- フォーム ---------- */
   form {
-    padding: 16px;
-    gap: 14px;
+    padding: 18px;
+    gap: 16px;
+  }
+
+  label {
+    font-size: 12px;
+    letter-spacing: 2px;
   }
 
   input, select, textarea {
-    font-size: 16px; /* iOSでズームインしないように16px以上にする */
-    padding: 10px 10px;
+    font-size: 16px;
+    padding: 12px 12px;
   }
 
   .btn {
-    font-size: 11px;
-    padding: 10px 16px;
+    font-size: 13px;   /* 11px → 13px */
+    padding: 12px 18px;
   }
 
   /* ---------- 記録アイテム ---------- */
   .record-item {
-    flex-direction: column;  /* 縦積みに */
+    flex-direction: column;
     align-items: flex-start;
   }
 
   .record-actions {
     width: 100%;
     justify-content: flex-end;
-    margin-top: 8px;
+    margin-top: 10px;
   }
 
   /* ---------- 曜日バッジ ---------- */
   .day-badge {
-    width: 34px;
-    height: 34px;
-    font-size: 10px;
+    width: 40px;      /* 34px → 40px */
+    height: 40px;
+    font-size: 13px;  /* 10px → 13px */
   }
 
   /* ---------- ボタン群（フィルターなど） ---------- */
   .filter-btn {
-    font-size: 10px;
-    padding: 8px 12px;
+    font-size: 13px;  /* 10px → 13px */
+    padding: 10px 16px;
     letter-spacing: 1px;
   }
 
@@ -439,15 +446,19 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 @media (max-width: 480px) {
 
   .card-grid {
-    grid-template-columns: 1fr; /* 1列に */
+    grid-template-columns: 1fr;
   }
 
   h1 {
-    font-size: 15px;
+    font-size: 18px;
     letter-spacing: 2px;
   }
 
   .stat-card .value {
-    font-size: 22px;
+    font-size: 30px;
+  }
+
+  .stat-card .label {
+    font-size: 11px;
   }
 }
