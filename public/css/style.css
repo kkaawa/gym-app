@@ -303,3 +303,151 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .message.success { background-color: #0d1f16; color: #3a9e6a; border-left: 2px solid #3a9e6a; }
 .message.error   { background-color: #1f0d0d; color: #c0392b; border-left: 2px solid #c0392b; }
+
+
+/* ============================================================
+   レスポンシブデザイン
+   スマホ（768px以下）向けの調整
+   ============================================================ */
+@media (max-width: 768px) {
+
+  /* ---------- ナビゲーション ---------- */
+  nav {
+    height: auto;
+    min-height: 48px;
+    padding: 0 12px;
+    /* 横スクロール：リンクがはみ出しても横にスワイプして見られる */
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* iOSでのスムーズスクロール */
+    scrollbar-width: none;             /* Firefoxでスクロールバーを非表示 */
+    flex-wrap: nowrap;                 /* 折り返さずに一行に */
+  }
+  nav::-webkit-scrollbar { display: none; } /* Chromeでスクロールバーを非表示 */
+
+  .nav-brand {
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding-right: 12px;
+    margin-right: 4px;
+    white-space: nowrap;
+  }
+
+  nav a {
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding: 0 10px;
+    height: 48px;
+    white-space: nowrap; /* リンク文字を折り返さない */
+  }
+
+  /* ---------- ページレイアウト ---------- */
+  .page {
+    padding: 20px 12px;
+  }
+
+  h1 {
+    font-size: 17px;
+    letter-spacing: 3px;
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    font-size: 12px;
+    letter-spacing: 2px;
+  }
+
+  /* ---------- 数値カードグリッド ---------- */
+  .card-grid {
+    /* 5列 → 2列に変更 */
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stat-card {
+    padding: 14px 10px;
+  }
+
+  .stat-card .value {
+    font-size: 26px;
+  }
+
+  .stat-card .label {
+    font-size: 8px;
+    letter-spacing: 2px;
+  }
+
+  /* ---------- カード ---------- */
+  .card {
+    padding: 14px;
+  }
+
+  /* ---------- フォーム ---------- */
+  form {
+    padding: 16px;
+    gap: 14px;
+  }
+
+  input, select, textarea {
+    font-size: 16px; /* iOSでズームインしないように16px以上にする */
+    padding: 10px 10px;
+  }
+
+  .btn {
+    font-size: 11px;
+    padding: 10px 16px;
+  }
+
+  /* ---------- 記録アイテム ---------- */
+  .record-item {
+    flex-direction: column;  /* 縦積みに */
+    align-items: flex-start;
+  }
+
+  .record-actions {
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: 8px;
+  }
+
+  /* ---------- 曜日バッジ ---------- */
+  .day-badge {
+    width: 34px;
+    height: 34px;
+    font-size: 10px;
+  }
+
+  /* ---------- ボタン群（フィルターなど） ---------- */
+  .filter-btn {
+    font-size: 10px;
+    padding: 8px 12px;
+    letter-spacing: 1px;
+  }
+
+  /* ---------- ポスター・名刺の操作パネル ---------- */
+  .controls {
+    grid-template-columns: 1fr; /* 1列に */
+    padding: 16px;
+    gap: 12px;
+  }
+
+  /* ---------- 進捗バー ---------- */
+  .progress-bar-wrap {
+    height: 3px;
+  }
+}
+
+/* さらに小さい画面（480px以下）向けの追加調整 */
+@media (max-width: 480px) {
+
+  .card-grid {
+    grid-template-columns: 1fr; /* 1列に */
+  }
+
+  h1 {
+    font-size: 15px;
+    letter-spacing: 2px;
+  }
+
+  .stat-card .value {
+    font-size: 22px;
+  }
+}

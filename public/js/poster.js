@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('download-btn').addEventListener('click', downloadPoster);
 
   // 「印刷 / PDF保存」ボタン
-  document.getElementById('print-btn').addEventListener('click', () => window.print());
+  // 印刷ボタンは削除済み
 });
 
 // -----------------------------------------------

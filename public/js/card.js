@@ -28,8 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ダウンロードボタン
   document.getElementById('download-btn').addEventListener('click', downloadCard);
 
-  // 印刷ボタン
-  document.getElementById('print-btn').addEventListener('click', () => window.print());
+  // 印刷ボタンは削除済み
 
   // リサイズ時に再スケール
   window.addEventListener('resize', () => {
