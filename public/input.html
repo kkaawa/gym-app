@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>GYM LOG - 記録入力</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <div id="nav"></div>
+
+  <div class="page">
+    <h1>記録入力</h1>
+
+    <!-- 送信後のメッセージ表示エリア -->
+    <div id="message"></div>
+
+    <form id="record-form">
+
+      <div>
+        <label for="date">日付</label>
+        <input type="date" id="date" required>
+      </div>
+
+      <div>
+        <label for="syumoku">種目</label>
+        <!-- datalist を使うとリストから選択 + 自由入力の両方ができる -->
+        <input type="text" id="syumoku" list="syumoku-list" placeholder="種目を選択または入力" required>
+        <datalist id="syumoku-list">
+          <option value="ベンチプレス">
+          <option value="スクワット">
+          <option value="デッドリフト">
+          <option value="ショルダープレス">
+          <option value="ラットプルダウン">
+          <option value="懸垂">
+          <option value="アームカール">
+          <option value="トライセプスプレスダウン">
+          <option value="レッグプレス">
+        </datalist>
+      </div>
+
+      <div>
+        <label for="omosa">重量（kg）</label>
+        <input type="number" id="omosa" step="0.5" min="0" placeholder="例: 60" required>
+      </div>
+
+      <div>
+        <label for="reps">回数</label>
+        <input type="number" id="reps" min="1" placeholder="例: 10" required>
+      </div>
+
+      <div>
+        <label for="memo">メモ（任意）</label>
+        <textarea id="memo" rows="3" placeholder="フォームの注意点など..."></textarea>
+      </div>
+
+      <div>
+        <label>
+          <input type="checkbox" id="oikomi">
+          追い込みセット（限界まで追い込んだセット）
+        </label>
+      </div>
+
+      <button type="submit" class="btn btn-primary">記録を保存する</button>
+    </form>
+  </div>
+
+  <script src="/js/nav.js"></script>
+  <script src="/js/input.js"></script>
+</body>
+</html>

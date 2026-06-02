@@ -1,0 +1,12 @@
+# 依存パッケージ（npm installで再生成できるので不要）
+node_modules/
+
+# データベース（個人データなので除外）
+*.db
+
+# OS生成ファイル
+.DS_Store
+Thumbs.db
+
+# エディタ設定
+.vscode/

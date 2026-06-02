@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>GYM LOG - PR一覧</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .pr-card {
+      background: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 12px;
+    }
+    .pr-name {
+      font-size: 18px;
+      font-weight: bold;
+      color: #f0a500;
+      margin-bottom: 8px;
+    }
+    .pr-stats {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      font-size: 14px;
+      color: #bbb;
+      margin-bottom: 12px;
+    }
+    .pr-stats span strong {
+      color: #eee;
+      font-size: 16px;
+    }
+    .pr-date {
+      font-size: 12px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="nav"></div>
+
+  <div class="page">
+    <h1>PR一覧（パーソナルレコード）</h1>
+
+    <!-- 種目別ボリューム比較グラフ -->
+    <div class="card" style="margin-bottom:32px;">
+      <h2>種目別 総ボリューム比較</h2>
+      <canvas id="volume-chart" height="120"></canvas>
+    </div>
+
+    <!-- PR一覧カード -->
+    <div id="pr-container">読み込み中...</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="/js/nav.js"></script>
+  <script src="/js/pr.js"></script>
+</body>
+</html>

@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>GYM LOG - ポスター</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <!-- 3フォントを1つのlinkでまとめて読み込む（リクエスト数を減らせる） -->
+  <!-- Anton: タイトル用（超極太・フィットネス系の定番） -->
+  <!-- Oswald: 数字用（スタイリッシュで見やすい） -->
+  <!-- Noto Sans JP: 日本語用（SNS画像でも潰れない） -->
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    /* ---- 操作パネル ---- */
+    .controls {
+      background: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 24px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: flex-end;
+      margin-bottom: 32px;
+    }
+    .controls > div { display: flex; flex-direction: column; gap: 4px; }
+
+    /* ---- ポスター全体 ---- */
+    #poster-wrap {
+      display: none; /* 生成前は非表示 */
+    }
+
+    #poster {
+      width: 900px;
+      height: 1100px;
+      background-color: #080604;
+      position: relative;
+      /* デフォルトは日本語フォント。英字・数字は各要素で上書きする */
+      font-family: 'Noto Sans JP', sans-serif;
+      overflow: hidden;
+    }
+
+    /* 写真を全体の背景として敷く */
+    .poster-bg-photo {
+      position: absolute;
+      top: 0; right: 0;
+      width: 70%;       /* 右側70%に写真を表示 */
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      filter: brightness(0.8) contrast(1.05);
+    }
+
+    /* 左から右へのグラデーションオーバーレイ
+       左側は完全に暗く → 右に向かって徐々に透明になり写真が見える */
+    .poster-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to right,
+        rgba(8,  6,  4, 1.00)  0%,
+        rgba(8,  6,  4, 0.98) 30%,
+        rgba(8,  6,  4, 0.80) 50%,
+        rgba(8,  6,  4, 0.30) 72%,
+        rgba(8,  6,  4, 0.00) 90%
+      );
+      z-index: 1;
+    }
+
+    /* ===== 左カラム（テキスト全体） ===== */
+    .poster-left {
+      position: relative;
+      z-index: 2;          /* オーバーレイより前面に出す */
+      width: 62%;
+      height: 100%;
+      padding: 40px 36px 56px; /* 下は bottom-bar 分あける */
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    /* ロゴ → Oswald */
+    .poster-logo {
+      font-family: 'Oswald', sans-serif;
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: #D4AF37;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .poster-logo::before { content: '♛'; font-size: 14px; }
+    .poster-logo::after  { content: ''; flex: 1; height: 1px; background: #D4AF37; }
+
+    /* メインタイトル（PUSH DAY） → Anton */
+    .poster-title {
+      font-family: 'Anton', sans-serif;
+      font-size: 130px;
+      font-weight: 400; /* Anton は Regular でも極太 */
+      color: #ffffff;
+      line-height: 0.88;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    /* 日付 → Oswald */
+    .poster-date {
+      font-family: 'Oswald', sans-serif;
+      font-size: 14px;
+      color: #aaa;
+      letter-spacing: 3px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .poster-date-badge {
+      background: #D4AF37;
+      color: #000;
+      font-size: 10px;
+      font-weight: bold;
+      padding: 3px 8px;
+      letter-spacing: 2px;
+    }
+
+    /* 区切り線 */
+    .poster-divider {
+      height: 1px;
+      background: linear-gradient(to right, #D4AF37, transparent);
+      margin-bottom: 20px;
+    }
+
+    /* 数値グリッド（TOTAL VOLUME など） */
+    .poster-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: #333;
+      border: 1px solid #333;
+      margin-bottom: 16px;
+    }
+    .poster-stat {
+      background: #111;
+      padding: 10px 8px;
+      text-align: center;
+    }
+    .poster-stat-label {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 7px;
+      letter-spacing: 2px;
+      color: #888;
+      margin-bottom: 4px;
+    }
+    /* .poster-stat-value は下で Oswald を使う定義に統一済み */
+    .poster-stat-unit {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 10px;
+      color: #666;
+    }
+
+    /* たとえ比較（軽自動車・映画） → 日本語なので Noto Sans JP */
+    .poster-comparison {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 11px;
+      color: #888;
+      letter-spacing: 1px;
+      margin-bottom: 18px;
+      padding: 8px 12px;
+      border-left: 2px solid #D4AF37;
+      background: #111;
+    }
+
+    /* TODAY'S BEST SET */
+    .poster-best {
+      border: 1px solid #D4AF37;
+      padding: 14px 16px;
+      margin-bottom: 18px;
+    }
+    .poster-best-label {
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: #D4AF37;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .poster-best-label::before { content: '▶'; }
+    .poster-best-name {
+      font-family: 'Anton', sans-serif;   /* 種目名も Anton で迫力を出す */
+      font-size: 34px;
+      font-weight: 400;
+      color: #fff;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .poster-best-weight {
+      font-family: 'Oswald', sans-serif;  /* 重量の数字は Oswald */
+      font-size: 58px;
+      font-weight: 700;
+      color: #D4AF37;
+      line-height: 1;
+      text-align: right;
+    }
+    .poster-best-reps {
+      font-family: 'Oswald', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: #aaa;
+      text-align: right;
+      letter-spacing: 2px;
+    }
+    .poster-best-sub {
+      font-size: 9px;
+      color: #555;
+      letter-spacing: 3px;
+      margin-top: 4px;
+    }
+
+    /* TODAY'S WORKOUT LOG */
+    .poster-log-title {
+      font-size: 9px;
+      letter-spacing: 4px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+    .poster-log-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      flex: 1;
+    }
+    /* 種目ログのカード：画像を背景に敷いて文字を重ねる */
+    .poster-log-item {
+      position: relative;
+      overflow: hidden;
+      min-height: 90px;
+      border: 1px solid #2a2a2a;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end; /* 文字を下に寄せる */
+      padding: 10px 10px 8px;
+      background-size: cover;
+      background-position: center top;
+      background-color: #1a1a1a; /* 画像なしのときの背景色 */
+    }
+
+    /* 画像の上に暗いグラデーションをかけて文字を読みやすくする */
+    .poster-log-item::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.90) 0%,
+        rgba(0, 0, 0, 0.50) 50%,
+        rgba(0, 0, 0, 0.20) 100%
+      );
+      z-index: 0;
+    }
+
+    /* カード内のテキストはオーバーレイより前面に */
+    .poster-log-item > * { position: relative; z-index: 1; }
+
+    /* 種目名 → Anton */
+    .poster-log-name {
+      font-family: 'Anton', sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      color: #ffffff;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      line-height: 1.2;
+    }
+
+    .poster-log-pr-badge {
+      font-size: 8px;
+      background: #D4AF37;
+      color: #000;
+      padding: 1px 5px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    /* セット内容 → Oswald で数字をきれいに */
+    .poster-log-sets {
+      font-family: 'Oswald', sans-serif;
+      font-size: 11px;
+      color: #aaa;
+      margin-top: 3px;
+      letter-spacing: 0.5px;
+    }
+
+    /* フッター */
+    .poster-footer-stats {
+      display: flex;
+      gap: 24px;
+      align-items: flex-end;
+      margin-top: auto;
+      padding-top: 12px;
+      border-top: 1px solid #222;
+    }
+    .poster-footer-stat-value {
+      font-family: 'Oswald', sans-serif;
+      font-size: 36px;
+      font-weight: 700;
+      color: #D4AF37;
+      line-height: 1;
+    }
+    .poster-footer-stat-label {
+      font-size: 8px;
+      color: #555;
+      letter-spacing: 2px;
+    }
+    /* 名言・日本語テキスト → Noto Sans JP */
+    .poster-footer-quote {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 12px;
+      color: #666;
+      line-height: 1.6;
+      margin-left: auto;
+      text-align: right;
+    }
+    .poster-footer-quote strong {
+      font-family: 'Oswald', sans-serif;
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: #D4AF37;
+      display: block;
+    }
+
+    /* 数値（TOTAL VOLUME の数字など） → Oswald */
+    .poster-stat-value {
+      font-family: 'Oswald', sans-serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: #D4AF37;
+      line-height: 1;
+    }
+
+    /* ===== フッターバー（下部 full-width） ===== */
+    .poster-bottom-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #D4AF37;
+      padding: 10px 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+    }
+    .poster-bottom-bar-logo {
+      font-family: 'Oswald', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: #000;
+    }
+    .poster-bottom-bar-sub {
+      font-size: 8px;
+      color: #333;
+      letter-spacing: 1px;
+    }
+    .poster-bottom-bar-right {
+      font-size: 9px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      color: #000;
+      text-align: right;
+    }
+
+    /* ダウンロードボタンエリア */
+    #poster-actions {
+      display: none;
+      gap: 12px;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="nav"></div>
+
+  <div class="page" style="max-width: 960px;">
+    <h1>ポスター生成</h1>
+
+    <!-- 操作パネル -->
+    <div class="controls">
+      <div>
+        <label>日付</label>
+        <input type="date" id="poster-date">
+      </div>
+      <div>
+        <label>ワークアウトタイプ</label>
+        <select id="workout-type">
+          <option value="PUSH DAY">PUSH DAY</option>
+          <option value="PULL DAY">PULL DAY</option>
+          <option value="LEG DAY">LEG DAY</option>
+          <option value="FULL BODY">FULL BODY</option>
+          <option value="UPPER BODY">UPPER BODY</option>
+          <option value="LOWER BODY">LOWER BODY</option>
+          <option value="CHEST DAY">CHEST DAY</option>
+          <option value="BACK DAY">BACK DAY</option>
+        </select>
+      </div>
+      <div>
+        <label>トレーニング時間（分）</label>
+        <input type="number" id="training-time" min="1" value="60" style="width:100px;">
+      </div>
+      <div>
+        <label>写真（自分の画像）</label>
+        <input type="file" id="photo-upload" accept="image/*" style="color:#aaa; width:200px;">
+      </div>
+      <div>
+        <button class="btn btn-primary" id="generate-btn">ポスターを生成する</button>
+      </div>
+    </div>
+
+    <!-- ポスタープレビュー -->
+    <div id="poster-wrap">
+      <!-- ↓ここがポスター本体（900×1100px固定） -->
+      <div id="poster">
+
+        <!-- 写真を全体の背景として敷く（poster.jsがsrcをセットする） -->
+        <img id="p-photo" class="poster-bg-photo" src="" alt="" style="display:none;">
+
+        <!-- 左から右へのグラデーションオーバーレイ（写真と文字を馴染ませる） -->
+        <div class="poster-overlay"></div>
+
+        <!-- テキスト・データコンテンツ -->
+        <div class="poster-left">
+          <div class="poster-logo">GROWTH GYM LOG</div>
+          <div class="poster-title" id="p-title">PUSH DAY</div>
+          <div class="poster-date">
+            <span id="p-date">2026.06.02</span>
+            <span class="poster-date-badge" id="p-day">MON</span>
+          </div>
+
+          <div class="poster-divider"></div>
+
+          <!-- 数値グリッド -->
+          <div class="poster-stats-grid">
+            <div class="poster-stat">
+              <div class="poster-stat-label">TOTAL VOLUME</div>
+              <div class="poster-stat-value" id="p-volume">0</div>
+              <div class="poster-stat-unit">kg</div>
+            </div>
+            <div class="poster-stat">
+              <div class="poster-stat-label">TRAINING TIME</div>
+              <div class="poster-stat-value" id="p-time">0</div>
+              <div class="poster-stat-unit">min</div>
+            </div>
+            <div class="poster-stat">
+              <div class="poster-stat-label">TOTAL SETS</div>
+              <div class="poster-stat-value" id="p-sets">0</div>
+              <div class="poster-stat-unit">sets</div>
+            </div>
+            <div class="poster-stat">
+              <div class="poster-stat-label">EXERCISES</div>
+              <div class="poster-stat-value" id="p-exercises">0</div>
+              <div class="poster-stat-unit">types</div>
+            </div>
+          </div>
+
+          <!-- たとえ比較 -->
+          <div class="poster-comparison" id="p-comparison"></div>
+
+          <!-- TODAY'S BEST SET -->
+          <div class="poster-best">
+            <div class="poster-best-label">TODAY'S BEST SET</div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+              <div>
+                <div class="poster-best-name" id="p-best-name">-</div>
+                <div class="poster-best-sub">KEEP PUSHING —</div>
+              </div>
+              <div>
+                <div class="poster-best-weight"><span id="p-best-weight">0</span> <span style="font-size:20px;">KG</span></div>
+                <div class="poster-best-reps">× <span id="p-best-reps">0</span> REPS</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TODAY'S WORKOUT LOG -->
+          <div class="poster-log-title">TODAY'S WORKOUT LOG ——</div>
+          <div class="poster-log-grid" id="p-log-grid"></div>
+
+          <!-- フッター数値 -->
+          <div class="poster-footer-stats">
+            <div>
+              <div class="poster-footer-stat-value" id="p-total-reps">0</div>
+              <div class="poster-footer-stat-label">TOTAL REPS</div>
+            </div>
+            <div>
+              <div class="poster-footer-stat-value" id="p-cars">0</div>
+              <div class="poster-footer-stat-label">CAR LOADS</div>
+            </div>
+            <div class="poster-footer-quote">
+              限界は、自分が決める。
+              <strong>KEEP GROWING.</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- 下部バー -->
+        <div class="poster-bottom-bar">
+          <div>
+            <div class="poster-bottom-bar-logo">GROWTH GYM LOG</div>
+            <div class="poster-bottom-bar-sub">今日の努力は、明日の自分をつくる。 KEEP GROWING.</div>
+          </div>
+          <div class="poster-bottom-bar-right">KEEP<br>GROWING.</div>
+        </div>
+
+      </div><!-- /poster -->
+    </div><!-- /poster-wrap -->
+
+    <!-- ダウンロード・印刷ボタン -->
+    <div id="poster-actions" style="display:none; gap:12px; margin-top:16px;">
+      <button class="btn btn-primary" id="download-btn">画像としてダウンロード</button>
+      <button class="btn btn-secondary" id="print-btn">印刷 / PDF保存</button>
+    </div>
+
+  </div>
+
+  <!-- html2canvas: HTMLをそのまま画像に変換するライブラリ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="/js/nav.js"></script>
+  <script src="/js/poster.js"></script>
+</body>
+</html>

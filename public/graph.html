@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>GYM LOG - グラフ</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <div id="nav"></div>
+
+  <div class="page">
+    <h1>グラフ</h1>
+
+    <!-- フィルター操作エリア -->
+    <div class="card" style="display:flex; gap:16px; flex-wrap:wrap; align-items:flex-end; margin-bottom:24px;">
+
+      <div>
+        <label for="syumoku-select">種目</label>
+        <select id="syumoku-select" style="min-width:160px;">
+          <option value="">読み込み中...</option>
+        </select>
+      </div>
+
+      <div>
+        <label>期間</label>
+        <div style="display:flex; gap:8px; margin-top:4px;">
+          <button class="btn btn-secondary period-btn active" data-months="1">1ヶ月</button>
+          <button class="btn btn-secondary period-btn"        data-months="3">3ヶ月</button>
+          <button class="btn btn-secondary period-btn"        data-months="0">全期間</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Chart.js がグラフを描画するキャンバス -->
+    <div class="card">
+      <canvas id="weight-chart" height="100"></canvas>
+    </div>
+  </div>
+
+  <!-- Chart.js をCDNから読み込む（インストール不要） -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="/js/nav.js"></script>
+  <script src="/js/graph.js"></script>
+</body>
+</html>

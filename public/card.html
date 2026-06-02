@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>GYM LOG - 名刺</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+
+    /* ===== 操作パネル ===== */
+    .controls {
+      background: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .controls > div { display: flex; flex-direction: column; gap: 4px; }
+    .controls .full-width { grid-column: 1 / -1; }
+
+    /* ===== カード全体 ===== */
+    #card-wrap { display: none; }
+
+    #lifter-card {
+      width: 800px;
+      height: 500px;
+      background: #0c0a08;
+      display: flex;
+      font-family: 'Noto Sans JP', sans-serif;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ===== 左パネル（写真・名前） ===== */
+    .card-left {
+      width: 300px;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+      border-right: 1px solid #2a2a2a;
+    }
+
+    /* 背景写真 */
+    .card-left-photo {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      filter: brightness(0.75) contrast(1.1);
+    }
+
+    /* 写真の上に下からグラデーション */
+    .card-left-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to top,
+        rgba(10, 8, 6, 1.00)  0%,
+        rgba(10, 8, 6, 0.80) 35%,
+        rgba(10, 8, 6, 0.10) 70%,
+        rgba(10, 8, 6, 0.00) 100%
+      );
+    }
+
+    /* 縦書き "LIFTER CARD" */
+    .card-left-label {
+      position: absolute;
+      top: 20px;
+      left: 8px;
+      writing-mode: vertical-rl;
+      font-family: 'Oswald', sans-serif;
+      font-size: 9px;
+      letter-spacing: 4px;
+      color: #D4AF37;
+      opacity: 0.7;
+    }
+
+    /* 名前・プロフィールテキスト（左下） */
+    .card-left-content {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 20px 18px;
+      z-index: 2;
+    }
+    .card-left-script {
+      font-size: 13px;
+      color: #D4AF37;
+      font-style: italic;
+      margin-bottom: 2px;
+      opacity: 0.85;
+    }
+    .card-left-name {
+      font-family: 'Anton', sans-serif;
+      font-size: 52px;
+      color: #fff;
+      line-height: 0.9;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .card-left-subtitle {
+      font-family: 'Oswald', sans-serif;
+      font-size: 11px;
+      color: #D4AF37;
+      letter-spacing: 4px;
+      margin-top: 4px;
+    }
+    .card-left-quote-ja {
+      font-size: 10px;
+      color: #888;
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+    .card-left-quote-en {
+      font-family: 'Oswald', sans-serif;
+      font-size: 8px;
+      color: #555;
+      letter-spacing: 2px;
+      margin-top: 2px;
+    }
+
+    /* 左下ロゴ */
+    .card-left-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid #2a2a2a;
+    }
+    .card-left-logo-icon {
+      font-size: 20px;
+      color: #D4AF37;
+    }
+    .card-left-logo-text {
+      font-family: 'Oswald', sans-serif;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: #D4AF37;
+      line-height: 1.3;
+    }
+    .card-left-logo-sub {
+      font-size: 8px;
+      color: #555;
+    }
+
+    /* ===== 右パネル（データ） ===== */
+    .card-right {
+      flex: 1;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow: hidden;
+    }
+
+    /* セクションタイトル */
+    .section-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: #D4AF37;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #2a2a2a;
+    }
+
+    /* ABOUT ME グリッド */
+    .about-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .about-item {
+      background: #111;
+      border: 1px solid #222;
+      padding: 8px 10px;
+      text-align: center;
+    }
+    .about-icon { font-size: 16px; margin-bottom: 2px; color: #D4AF37; }
+    .about-label {
+      font-family: 'Oswald', sans-serif;
+      font-size: 7px;
+      letter-spacing: 2px;
+      color: #666;
+      margin-bottom: 3px;
+    }
+    .about-value {
+      font-family: 'Oswald', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* BIG 3 LIFTS */
+    .big3-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+    .big3-item {
+      position: relative;
+      height: 110px;
+      overflow: hidden;
+      background: #111;
+      border: 1px solid #222;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 8px 10px;
+      background-size: cover;
+      background-position: center;
+    }
+    .big3-item::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to top,
+        rgba(0,0,0,0.92) 0%,
+        rgba(0,0,0,0.5)  50%,
+        rgba(0,0,0,0.2)  100%
+      );
+    }
+    .big3-item > * { position: relative; z-index: 1; }
+    .big3-name {
+      font-family: 'Oswald', sans-serif;
+      font-size: 8px;
+      letter-spacing: 2px;
+      color: #888;
+      margin-bottom: 2px;
+    }
+    .big3-weight {
+      font-family: 'Anton', sans-serif;
+      font-size: 38px;
+      color: #fff;
+      line-height: 1;
+    }
+    .big3-weight span {
+      font-family: 'Oswald', sans-serif;
+      font-size: 14px;
+      color: #aaa;
+    }
+    .big3-rm {
+      font-family: 'Oswald', sans-serif;
+      font-size: 8px;
+      color: #D4AF37;
+      letter-spacing: 1px;
+      margin-top: 2px;
+      border: 1px solid #D4AF37;
+      display: inline-block;
+      padding: 0 4px;
+    }
+
+    /* LIFTER STATS */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+    .stat-item {
+      background: #111;
+      border: 1px solid #222;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .stat-icon { font-size: 18px; color: #D4AF37; flex-shrink: 0; }
+    .stat-label {
+      font-family: 'Oswald', sans-serif;
+      font-size: 7px;
+      letter-spacing: 1px;
+      color: #666;
+    }
+    .stat-value {
+      font-family: 'Oswald', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1;
+    }
+    .stat-unit {
+      font-size: 8px;
+      color: #555;
+    }
+
+    /* フッター */
+    .card-footer {
+      margin-top: auto;
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      padding-top: 10px;
+      border-top: 1px solid #1e1e1e;
+    }
+    .card-footer-quote {
+      flex: 1;
+    }
+    .card-footer-quote-mark {
+      font-family: 'Oswald', sans-serif;
+      font-size: 20px;
+      color: #D4AF37;
+      line-height: 1;
+    }
+    .card-footer-quote-text {
+      font-family: 'Oswald', sans-serif;
+      font-size: 9px;
+      letter-spacing: 1px;
+      color: #555;
+      line-height: 1.5;
+      text-transform: uppercase;
+    }
+    .card-footer-id {
+      text-align: center;
+    }
+    .card-footer-id-label {
+      font-family: 'Oswald', sans-serif;
+      font-size: 7px;
+      color: #555;
+      letter-spacing: 2px;
+    }
+    .card-footer-id-value {
+      font-family: 'Oswald', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      color: #D4AF37;
+    }
+    .card-footer-badge {
+      font-family: 'Oswald', sans-serif;
+      font-size: 8px;
+      letter-spacing: 2px;
+      color: #333;
+      text-align: right;
+      line-height: 1.4;
+    }
+
+    /* 右上の "NO EXCUSES." テキスト */
+    .card-right-header {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: -4px;
+    }
+    .card-tagline {
+      font-family: 'Oswald', sans-serif;
+      font-size: 8px;
+      letter-spacing: 2px;
+      color: #444;
+      text-align: right;
+    }
+
+    /* ダウンロードエリア */
+    #card-actions {
+      display: none;
+      gap: 12px;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="nav"></div>
+
+  <div class="page" style="max-width: 1060px;">
+    <h1>名刺（LIFTER CARD）</h1>
+
+    <!-- 入力フォーム -->
+    <div class="controls">
+      <div>
+        <label>名前（英字）</label>
+        <input type="text" id="c-name" placeholder="REIJIRO" style="text-transform:uppercase;">
+      </div>
+      <div>
+        <label>身長 (cm)</label>
+        <input type="number" id="c-height" placeholder="178">
+      </div>
+      <div>
+        <label>体重 (kg)</label>
+        <input type="number" id="c-weight" placeholder="75">
+      </div>
+      <div>
+        <label>トレーニング歴（年）</label>
+        <input type="number" id="c-age" placeholder="3" step="0.5">
+      </div>
+      <div>
+        <label>週の頻度（日/週）</label>
+        <input type="number" id="c-freq" placeholder="5">
+      </div>
+      <div>
+        <label>得意部位</label>
+        <select id="c-spec">
+          <option value="Chest">Chest</option>
+          <option value="Back">Back</option>
+          <option value="Legs">Legs</option>
+          <option value="Shoulders">Shoulders</option>
+          <option value="Arms">Arms</option>
+          <option value="Full Body">Full Body</option>
+        </select>
+      </div>
+      <div>
+        <label>LifterID（例: #GROWTH_0001）</label>
+        <input type="text" id="c-id" placeholder="#GROWTH_0001">
+      </div>
+      <div>
+        <label>写真</label>
+        <input type="file" id="c-photo" accept="image/*" style="color:#aaa;">
+      </div>
+      <div class="full-width" style="display:flex; align-items:flex-end;">
+        <button class="btn btn-primary" id="generate-btn">名刺を生成する</button>
+      </div>
+    </div>
+
+    <!-- カードプレビュー -->
+    <div id="card-wrap">
+      <div id="lifter-card">
+
+        <!-- ===== 左パネル ===== -->
+        <div class="card-left">
+          <img id="c-photo-el" class="card-left-photo" src="" alt="" style="display:none;">
+          <div class="card-left-overlay"></div>
+          <div class="card-left-label">LIFTER CARD</div>
+
+          <div class="card-left-content">
+            <div class="card-left-script">Keep Growing</div>
+            <div class="card-left-name" id="p-name">NAME</div>
+            <div class="card-left-subtitle">LIFTER PROFILE</div>
+            <div class="card-left-quote-ja">今日の努力は、明日の自分をつくる。</div>
+            <div class="card-left-quote-en">DISCIPLINE TODAY. STRENGTH TOMORROW.</div>
+            <div class="card-left-logo">
+              <div class="card-left-logo-icon">𝙇</div>
+              <div>
+                <div class="card-left-logo-text">GROWTH<br>GYM LOG</div>
+                <div class="card-left-logo-sub">EST. 2025</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== 右パネル ===== -->
+        <div class="card-right">
+
+          <div class="card-right-header">
+            <div class="card-tagline">NO EXCUSES.<br>JUST RESULTS.</div>
+          </div>
+
+          <!-- ABOUT ME -->
+          <div>
+            <div class="section-title">ABOUT ME</div>
+            <div class="about-grid">
+              <div class="about-item">
+                <div class="about-icon">↕</div>
+                <div class="about-label">HEIGHT / WEIGHT</div>
+                <div class="about-value" id="p-hw">— / —</div>
+              </div>
+              <div class="about-item">
+                <div class="about-icon">◎</div>
+                <div class="about-label">TRAINING AGE</div>
+                <div class="about-value" id="p-age">— years</div>
+              </div>
+              <div class="about-item">
+                <div class="about-icon">◈</div>
+                <div class="about-label">WEEKLY FREQUENCY</div>
+                <div class="about-value" id="p-freq">— days / week</div>
+              </div>
+              <div class="about-item">
+                <div class="about-icon">◆</div>
+                <div class="about-label">SPECIALITY</div>
+                <div class="about-value" id="p-spec">—</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- BIG 3 LIFTS -->
+          <div>
+            <div class="section-title">BIG 3 LIFTS</div>
+            <div class="big3-grid">
+              <div class="big3-item" style="background-image: url('/trainingphote/BENCH%20PRESS.png');">
+                <div class="big3-name">BENCH PRESS</div>
+                <div class="big3-weight" id="p-bench">—<span>kg</span></div>
+                <div class="big3-rm">1RM</div>
+              </div>
+              <div class="big3-item" style="background-image: url('/trainingphote/SQUAT.png');">
+                <div class="big3-name">SQUAT</div>
+                <div class="big3-weight" id="p-squat">—<span>kg</span></div>
+                <div class="big3-rm">1RM</div>
+              </div>
+              <div class="big3-item" style="background-image: url('/trainingphote/DEADLIFT.png');">
+                <div class="big3-name">DEADLIFT</div>
+                <div class="big3-weight" id="p-dead">—<span>kg</span></div>
+                <div class="big3-rm">1RM</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- LIFTER STATS -->
+          <div>
+            <div class="section-title">LIFTER STATS</div>
+            <div class="stats-grid">
+              <div class="stat-item">
+                <div class="stat-icon">▲</div>
+                <div>
+                  <div class="stat-label">TOTAL WORKOUTS</div>
+                  <div class="stat-value" id="p-workouts">—</div>
+                  <div class="stat-unit">WORKOUTS</div>
+                </div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-icon">◈</div>
+                <div>
+                  <div class="stat-label">TOTAL VOLUME</div>
+                  <div class="stat-value" id="p-volume">—</div>
+                  <div class="stat-unit">KG</div>
+                </div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-icon">▶</div>
+                <div>
+                  <div class="stat-label">LONGEST STREAK</div>
+                  <div class="stat-value" id="p-streak">—</div>
+                  <div class="stat-unit">DAYS</div>
+                </div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-icon">◆</div>
+                <div>
+                  <div class="stat-label">TOTAL EXERCISES</div>
+                  <div class="stat-value" id="p-exercises">—</div>
+                  <div class="stat-unit">TYPES</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- フッター -->
+          <div class="card-footer">
+            <div class="card-footer-quote">
+              <div class="card-footer-quote-mark">"</div>
+              <div class="card-footer-quote-text">
+                Discipline is the bridge<br>between goals and achievement.
+              </div>
+            </div>
+            <div class="card-footer-id">
+              <div class="card-footer-id-label">LIFTER ID</div>
+              <div class="card-footer-id-value" id="p-lifter-id">#GROWTH_0001</div>
+            </div>
+            <div class="card-footer-badge">GROWTH.<br>EVERYDAY.</div>
+          </div>
+
+        </div><!-- /card-right -->
+
+      </div><!-- /lifter-card -->
+    </div><!-- /card-wrap -->
+
+    <!-- ダウンロードボタン -->
+    <div id="card-actions" style="display:none; gap:12px; margin-top:16px;">
+      <button class="btn btn-primary" id="download-btn">画像としてダウンロード</button>
+      <button class="btn btn-secondary" id="print-btn">印刷 / PDF保存</button>
+    </div>
+
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="/js/nav.js"></script>
+  <script src="/js/card.js"></script>
+</body>
+</html>
