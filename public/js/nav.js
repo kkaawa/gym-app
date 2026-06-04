@@ -12,13 +12,13 @@ const NAV_LINKS = [
   { href: '/card.html',    label: 'Card' },
 ];
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
   const navEl = document.getElementById('nav');
   if (!navEl) return;
 
   const currentPath = window.location.pathname;
 
-  const linksHTML = NAV_LINKS.map(link => {
+  const linksHTML = NAV_LINKS.map(function(link) {
     const isActive = currentPath.endsWith(link.href.replace('/', ''));
     return `<a href="${link.href}" class="${isActive ? 'active' : ''}">${link.label}</a>`;
   }).join('');

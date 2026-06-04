@@ -33,7 +33,7 @@ const VOLUME_COMPARISONS = [
 // ボリュームに応じた比較テキストを返す
 function getVolumeComparison(volumeKg) {
   // threshold の大きい順に並んでいるので、最初にマッチしたものを使う
-  const matched = VOLUME_COMPARISONS.find(entry => volumeKg >= entry.threshold);
+  const matched = VOLUME_COMPARISONS.find(function(entry) { return volumeKg >= entry.threshold; });
   if (!matched) return `${volumeKg}kg を持ち上げた`;
   // items の中からランダムに1つ選ぶ
   const item = matched.items[Math.floor(Math.random() * matched.items.length)];
@@ -43,19 +43,19 @@ function getVolumeComparison(volumeKg) {
 // アップロードされた写真のデータURLを保持する変数
 let uploadedPhotoURL = null;
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
 
   // 日付フィールドに今日の日付をデフォルトでセット
   document.getElementById('poster-date').value = new Date().toISOString().split('T')[0];
 
   // 写真がアップロードされたら読み込む
-  document.getElementById('photo-upload').addEventListener('change', (e) => {
+  document.getElementById('photo-upload').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (!file) return;
 
     // FileReader: ファイルをブラウザ内でBase64データURLとして読み込む
     const reader = new FileReader();
-    reader.onload = (ev) => {
+    reader.onload = function(ev) {
       uploadedPhotoURL = ev.target.result; // Base64の画像データ
     };
     reader.readAsDataURL(file);
@@ -87,7 +87,7 @@ async function generatePoster() {
   // サーバーから全記録を取得して、選択した日付のものだけ絞り込む
   const res     = await fetch('/api/records');
   const all     = await res.json();
-  const records = all.filter(r => r.date === date);
+  const records = all.filter(function(r) { return r.date === date; });
 
   if (records.length === 0) {
     alert('その日のトレーニング記録がありません');
@@ -99,16 +99,16 @@ async function generatePoster() {
   const prs   = await prRes.json();
   // PRをすばやく引けるように種目名をキーにしたオブジェクトに変換
   const prMap = {};
-  prs.forEach(pr => { prMap[pr.syumoku] = pr; });
+  prs.forEach(function(pr) { prMap[pr.syumoku] = pr; });
 
   // ---------- 集計計算 ----------
-  const totalVolume  = records.reduce((sum, r) => sum + r.omosa * r.reps, 0);
+  const totalVolume  = records.reduce(function(sum, r) { return sum + r.omosa * r.reps; }, 0);
   const totalSets    = records.length;
-  const totalReps    = records.reduce((sum, r) => sum + r.reps, 0);
-  const exerciseCount = new Set(records.map(r => r.syumoku)).size;
+  const totalReps    = records.reduce(function(sum, r) { return sum + r.reps; }, 0);
+  const exerciseCount = new Set(records.map(function(r) { return r.syumoku; })).size;
 
   // ベストセット：その日の記録の中で推定1RM（重量×(1+回数/30)）が最も高いもの
-  const bestRecord = records.reduce((best, r) => {
+  const bestRecord = records.reduce(function(best, r) {
     const rm = r.omosa * (1 + r.reps / 30);
     return rm > (best.omosa * (1 + best.reps / 30)) ? r : best;
   });
@@ -142,7 +142,7 @@ async function generatePoster() {
   // ---------- ワークアウトログ（種目ごとの記録） ----------
   // 種目でグループ化する
   const grouped = {};
-  records.forEach(r => {
+  records.forEach(function(r) {
     if (!grouped[r.syumoku]) grouped[r.syumoku] = [];
     grouped[r.syumoku].push(r);
   });
@@ -150,14 +150,14 @@ async function generatePoster() {
   const logGrid = document.getElementById('p-log-grid');
   logGrid.innerHTML = '';
 
-  Object.entries(grouped).forEach(([syumoku, recs]) => {
+  Object.entries(grouped).forEach(function([syumoku, recs]) {
     // 種目 → 部位カテゴリ → 背景画像の順で解決
     const category = EXERCISE_TO_CATEGORY[syumoku];
     const imgPath  = category ? CATEGORY_IMAGES[category] : null;
-    const isPR     = prMap[syumoku] && prMap[syumoku].best_weight === Math.max(...recs.map(r => r.omosa));
+    const isPR     = prMap[syumoku] && prMap[syumoku].best_weight === Math.max(...recs.map(function(r) { return r.omosa; }));
 
     // セット一覧のテキスト（例: 200·6 · 195·6 · 100·4）
-    const setsText = recs.map(r => `${r.omosa}·${r.reps}`).join(' · ');
+    const setsText = recs.map(function(r) { return `${r.omosa}·${r.reps}`; }).join(' · ');
     const prBadge  = isPR ? `<span class="poster-log-pr-badge">★PR</span>` : '';
 
     // 画像がある場合は background-image としてカードに背景を設定する
@@ -231,7 +231,7 @@ function scalePosterToFit() {
 }
 
 // ウィンドウサイズが変わったときも再計算する
-window.addEventListener('resize', () => {
+window.addEventListener('resize', function() {
   if (document.getElementById('poster-wrap').style.display !== 'none') {
     scalePosterToFit();
   }

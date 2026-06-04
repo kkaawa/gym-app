@@ -4,7 +4,7 @@ const router  = express.Router();
 const db      = require('../db');
 
 // GET /api/records
-router.get('/', (req, res) => {
+router.get('/', function(req, res) {
   const records = db.prepare(`
     SELECT * FROM training_records ORDER BY date DESC, id DESC
   `).all();
@@ -12,7 +12,7 @@ router.get('/', (req, res) => {
 });
 
 // POST /api/records
-router.post('/', (req, res) => {
+router.post('/', function(req, res) {
   const { date, syumoku, omosa, reps, memo, oikomi, training_type } = req.body;
   if (!date || !syumoku || omosa == null || !reps) {
     return res.status(400).json({ error: '日付・種目・重量・回数は必須です' });
@@ -25,7 +25,7 @@ router.post('/', (req, res) => {
 });
 
 // PUT /api/records/:id
-router.put('/:id', (req, res) => {
+router.put('/:id', function(req, res) {
   const { id } = req.params;
   const { date, syumoku, omosa, reps, memo, oikomi, training_type } = req.body;
   const result = db.prepare(`
@@ -38,7 +38,7 @@ router.put('/:id', (req, res) => {
 });
 
 // DELETE /api/records/:id
-router.delete('/:id', (req, res) => {
+router.delete('/:id', function(req, res) {
   const { id } = req.params;
   const result = db.prepare(`DELETE FROM training_records WHERE id=?`).run(id);
   if (result.changes === 0) return res.status(404).json({ error: '記録が見つかりませんでした' });

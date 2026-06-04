@@ -3,19 +3,19 @@
 
 let uploadedPhotoURL = null;
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
 
   // 写真アップロード
-  document.getElementById('c-photo').addEventListener('change', (e) => {
+  document.getElementById('c-photo').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (ev) => { uploadedPhotoURL = ev.target.result; };
+    reader.onload = function(ev) { uploadedPhotoURL = ev.target.result; };
     reader.readAsDataURL(file);
   });
 
   // 生成ボタン
-  document.getElementById('generate-btn').addEventListener('click', async () => {
+  document.getElementById('generate-btn').addEventListener('click', async function() {
     try {
       await generateCard();
     } catch (err) {
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 印刷ボタンは削除済み
 
   // リサイズ時に再スケール
-  window.addEventListener('resize', () => {
+  window.addEventListener('resize', function() {
     if (document.getElementById('card-wrap').style.display !== 'none') {
       scaleCardToFit();
     }
@@ -79,7 +79,7 @@ async function generateCard() {
 
   // ---------- BIG 3 LIFTS ----------
   // data.big3 = { 'ベンチプレス': 100.5, 'スクワット': 140, 'デッドリフト': 170 }
-  const setLift = (elId, value) => {
+  const setLift = function(elId, value) {
     const el = document.getElementById(elId);
     if (value) {
       el.innerHTML = `${value}<span>kg</span>`;

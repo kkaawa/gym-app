@@ -9,7 +9,7 @@ const db      = require('../db');
 // GET /api/goals
 // 全目標を取得する（作成日の新しい順）
 // -----------------------------------------------
-router.get('/', (req, res) => {
+router.get('/', function(req, res) {
   const goals = db.prepare(`
     SELECT * FROM goals
     ORDER BY created_at DESC
@@ -23,7 +23,7 @@ router.get('/', (req, res) => {
 // 新しい目標を1件追加する
 // リクエストボディ例: { syumoku, target_weight, target_date }
 // -----------------------------------------------
-router.post('/', (req, res) => {
+router.post('/', function(req, res) {
   const { syumoku, target_weight, target_date } = req.body;
 
   if (!syumoku || target_weight == null || !target_date) {
@@ -45,7 +45,7 @@ router.post('/', (req, res) => {
 // PUT /api/goals/:id
 // 指定したIDの目標を更新する
 // -----------------------------------------------
-router.put('/:id', (req, res) => {
+router.put('/:id', function(req, res) {
   const { id } = req.params;
   const { syumoku, target_weight, target_date } = req.body;
 
@@ -65,7 +65,7 @@ router.put('/:id', (req, res) => {
 // DELETE /api/goals/:id
 // 指定したIDの目標を削除する
 // -----------------------------------------------
-router.delete('/:id', (req, res) => {
+router.delete('/:id', function(req, res) {
   const { id } = req.params;
 
   const result = db.prepare(`

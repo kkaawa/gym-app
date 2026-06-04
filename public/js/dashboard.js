@@ -5,7 +5,7 @@
 const DAY_LABELS = ['月', '火', '水', '木', '金', '土', '日'];
 
 // ページが読み込まれたらデータを取得して表示する
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', async function() {
   // サーバーの /api/dashboard にリクエストを送る
   const res  = await fetch('/api/dashboard');
   const data = await res.json();

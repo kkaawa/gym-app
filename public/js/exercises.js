@@ -62,8 +62,8 @@ const EXERCISE_DATA = [
 // 種目名 → 部位カテゴリ の逆引きマップを自動生成
 // 例: { 'ベンチプレス': '胸', 'スクワット': '足', ... }
 const EXERCISE_TO_CATEGORY = {};
-EXERCISE_DATA.forEach(group => {
-  group.exercises.forEach(name => {
+EXERCISE_DATA.forEach(function(group) {
+  group.exercises.forEach(function(name) {
     EXERCISE_TO_CATEGORY[name] = group.category;
   });
 });
@@ -85,19 +85,19 @@ function populateExerciseList(elementId) {
 
   // datalist の場合
   if (el.tagName === 'DATALIST') {
-    el.innerHTML = EXERCISE_DATA.flatMap(group =>
-      group.exercises.map(name => `<option value="${name}">`)
-    ).join('');
+    el.innerHTML = EXERCISE_DATA.flatMap(function(group) {
+      return group.exercises.map(function(name) { return `<option value="${name}">`; });
+    }).join('');
   }
 
   // select の場合（optgroup でグループ化）
   if (el.tagName === 'SELECT') {
     const firstOption = el.querySelector('option[value=""]');
     el.innerHTML = firstOption ? firstOption.outerHTML : '';
-    EXERCISE_DATA.forEach(group => {
+    EXERCISE_DATA.forEach(function(group) {
       const optgroup = document.createElement('optgroup');
       optgroup.label = group.category;
-      group.exercises.forEach(name => {
+      group.exercises.forEach(function(name) {
         const opt   = document.createElement('option');
         opt.value   = name;
         opt.textContent = name;

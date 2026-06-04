@@ -9,7 +9,7 @@ const db      = require('../db');
 // GET /api/pr
 // 種目ごとのPR（最高重量・回数・推定1RM）を返す
 // -----------------------------------------------
-router.get('/', (req, res) => {
+router.get('/', function(req, res) {
 
   // 種目ごとに「最も重量が高いセット」を1件ずつ取得
   const prs = db.prepare(`
@@ -26,10 +26,12 @@ router.get('/', (req, res) => {
 
   // 推定1RM（Epley式）を計算して追加する
   // 1RM = 重量 × (1 + 回数 / 30)
-  const prsWithRM = prs.map(pr => ({
-    ...pr,
-    estimated_1rm: Math.round(pr.best_weight * (1 + pr.reps / 30) * 10) / 10
-  }));
+  const prsWithRM = prs.map(function(pr) {
+    return {
+      ...pr,
+      estimated_1rm: Math.round(pr.best_weight * (1 + pr.reps / 30) * 10) / 10
+    };
+  });
 
   res.json(prsWithRM);
 });

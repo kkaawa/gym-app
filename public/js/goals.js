@@ -1,11 +1,11 @@
 // ===== goals.js =====
 // 目標設定の追加・表示・削除と進捗表示を担当
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
   loadGoals();
 
   // 部位 → 種目の2段階選択
-  document.getElementById('category-select').addEventListener('change', (e) => {
+  document.getElementById('category-select').addEventListener('change', function(e) {
     const category       = e.target.value;
     const exerciseArea   = document.getElementById('exercise-select-area');
     const freeArea       = document.getElementById('exercise-free-area');
@@ -18,10 +18,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (category === 'free') {
       freeArea.style.display = 'block';
     } else if (category) {
-      const group = EXERCISE_DATA.find(g => g.category === category);
+      const group = EXERCISE_DATA.find(function(g) { return g.category === category; });
       exerciseSelect.innerHTML = '<option value="">種目を選択してください</option>';
       if (group) {
-        group.exercises.forEach(name => {
+        group.exercises.forEach(function(name) {
           const opt = document.createElement('option');
           opt.value = opt.textContent = name;
           exerciseSelect.appendChild(opt);
@@ -31,16 +31,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  document.getElementById('exercise-select').addEventListener('change', (e) => {
+  document.getElementById('exercise-select').addEventListener('change', function(e) {
     document.getElementById('syumoku').value = e.target.value;
   });
 
-  document.getElementById('exercise-free').addEventListener('input', (e) => {
+  document.getElementById('exercise-free').addEventListener('input', function(e) {
     document.getElementById('syumoku').value = e.target.value;
   });
 
   // 目標追加フォームの送信
-  document.getElementById('goal-form').addEventListener('submit', async (e) => {
+  document.getElementById('goal-form').addEventListener('submit', async function(e) {
     e.preventDefault();
 
     const data = {
@@ -80,7 +80,7 @@ async function loadGoals() {
   // PRをすばやく引けるように、種目名をキーにしたオブジェクトに変換
   // 例: { 'ベンチプレス': { best_weight: 85, ... }, ... }
   const prMap = {};
-  prs.forEach(pr => { prMap[pr.syumoku] = pr; });
+  prs.forEach(function(pr) { prMap[pr.syumoku] = pr; });
 
   const container = document.getElementById('goals-container');
 
@@ -91,7 +91,7 @@ async function loadGoals() {
 
   const today = new Date().toISOString().split('T')[0];
 
-  const html = goals.map(goal => {
+  const html = goals.map(function(goal) {
     const pr          = prMap[goal.syumoku];
     const currentPR   = pr ? pr.best_weight : 0;  // 現在のPR（なければ0）
     const isAchieved  = currentPR >= goal.target_weight; // 目標達成しているか
@@ -155,5 +155,5 @@ async function deleteGoal(id) {
 function showMessage(text, type) {
   const el = document.getElementById('message');
   el.innerHTML = `<div class="message ${type}">${text}</div>`;
-  setTimeout(() => { el.innerHTML = ''; }, 3000);
+  setTimeout(function() { el.innerHTML = ''; }, 3000);
 }

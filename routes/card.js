@@ -6,7 +6,7 @@ const router  = express.Router();
 const db      = require('../db');
 
 // GET /api/card
-router.get('/', (req, res) => {
+router.get('/', function(req, res) {
 
   // 総トレーニング日数（ユニークな日付の数）
   const totalWorkouts = db.prepare(`
@@ -22,7 +22,7 @@ router.get('/', (req, res) => {
   const big3Syumoku = ['ベンチプレス', 'スクワット', 'デッドリフト'];
   const big3 = {};
 
-  big3Syumoku.forEach(syumoku => {
+  big3Syumoku.forEach(function(syumoku) {
     const records = db.prepare(`
       SELECT omosa, reps FROM training_records WHERE syumoku = ?
     `).all(syumoku);
@@ -33,7 +33,7 @@ router.get('/', (req, res) => {
     }
 
     // 全セットの中で推定1RMが最大のものを採用
-    const best1rm = records.reduce((best, r) => {
+    const best1rm = records.reduce(function(best, r) {
       const rm = r.omosa * (1 + r.reps / 30);
       return rm > best ? rm : best;
     }, 0);
@@ -44,7 +44,7 @@ router.get('/', (req, res) => {
   // 最長連続トレーニング日数（ストリーク）
   const allDates = db.prepare(`
     SELECT DISTINCT date FROM training_records ORDER BY date ASC
-  `).all().map(r => r.date);
+  `).all().map(function(r) { return r.date; });
 
   let longestStreak = 0;
   let currentStreak = allDates.length > 0 ? 1 : 0;

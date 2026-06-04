@@ -1,14 +1,14 @@
 // ===== input.js =====
 // 記録入力フォームの送信処理を担当
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
 
   // 日付フィールドに今日の日付をデフォルトでセット
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('date').value = today;
 
   // ① 部位プルダウンが変わったら種目プルダウンを更新
-  document.getElementById('category-select').addEventListener('change', (e) => {
+  document.getElementById('category-select').addEventListener('change', function(e) {
     const category       = e.target.value;
     const exerciseArea   = document.getElementById('exercise-select-area');
     const freeArea       = document.getElementById('exercise-free-area');
@@ -24,10 +24,10 @@ document.addEventListener('DOMContentLoaded', () => {
       freeArea.style.display = 'block';
     } else if (category) {
       // 選択した部位の種目リストを生成
-      const group = EXERCISE_DATA.find(g => g.category === category);
+      const group = EXERCISE_DATA.find(function(g) { return g.category === category; });
       exerciseSelect.innerHTML = '<option value="">種目を選択してください</option>';
       if (group) {
-        group.exercises.forEach(name => {
+        group.exercises.forEach(function(name) {
           const opt       = document.createElement('option');
           opt.value       = name;
           opt.textContent = name;
@@ -39,17 +39,17 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ② 種目プルダウンが変わったら hidden input にセット
-  document.getElementById('exercise-select').addEventListener('change', (e) => {
+  document.getElementById('exercise-select').addEventListener('change', function(e) {
     document.getElementById('syumoku').value = e.target.value;
   });
 
   // ③ 自由入力が変わったら hidden input にセット
-  document.getElementById('exercise-free').addEventListener('input', (e) => {
+  document.getElementById('exercise-free').addEventListener('input', function(e) {
     document.getElementById('syumoku').value = e.target.value;
   });
 
   // フォームの送信イベントを監視
-  document.getElementById('record-form').addEventListener('submit', async (e) => {
+  document.getElementById('record-form').addEventListener('submit', async function(e) {
     // ブラウザのデフォルト送信（ページリロード）を止める
     e.preventDefault();
 
@@ -103,10 +103,10 @@ document.addEventListener('DOMContentLoaded', () => {
 // メッセージを画面に表示するヘルパー関数
 function showMessage(text, type) {
   // ページ上部とボタン下の両方に表示する
-  ['message', 'message-bottom'].forEach(id => {
+  ['message', 'message-bottom'].forEach(function(id) {
     const el = document.getElementById(id);
     if (!el) return;
     el.innerHTML = `<div class="message ${type}">${text}</div>`;
-    setTimeout(() => { el.innerHTML = ''; }, 3000);
+    setTimeout(function() { el.innerHTML = ''; }, 3000);
   });
 }

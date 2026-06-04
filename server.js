@@ -19,6 +19,6 @@ app.use('/api/goals',     require('./routes/goals'));
 app.use('/api/pr',        require('./routes/pr'));
 app.use('/api/card',      require('./routes/card'));
 
-app.listen(PORT, () => {
+app.listen(PORT, function() {
   console.log(`サーバー起動中: http://localhost:${PORT}`);
 });

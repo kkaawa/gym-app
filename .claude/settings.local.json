@@ -3,7 +3,9 @@
     "allow": [
       "Bash(Start-Sleep -Seconds 2)",
       "Bash(Invoke-RestMethod http://localhost:3000/api/dashboard)",
-      "PowerShell(Invoke-RestMethod http://localhost:3000/api/dashboard)"
+      "PowerShell(Invoke-RestMethod http://localhost:3000/api/dashboard)",
+      "Bash(node server.js)",
+      "Bash(curl -s http://localhost:3000/api/dashboard)"
     ]
   }
 }

@@ -16,7 +16,7 @@ const TYPE_COLORS = {
   ''    : { bg: '#333',    text: '#aaa', label: '◆' },
 };
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', async function() {
   await loadRecords();
 
   // 今日の日付をカレンダーのデフォルト値にセット
@@ -24,9 +24,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderRecords();
 
   // フィルターボタンの切替
-  document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.filter-btn').forEach(b => {
+  document.querySelectorAll('.filter-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.filter-btn').forEach(function(b) {
         b.classList.remove('active', 'btn-primary');
         b.classList.add('btn-secondary');
       });
@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('filter-exercise').addEventListener('change', renderRecords);
 
   // 編集フォームの送信
-  document.getElementById('edit-form').addEventListener('submit', async (e) => {
+  document.getElementById('edit-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     const id   = document.getElementById('edit-id').value;
     const data = {
@@ -81,11 +81,11 @@ async function loadRecords() {
   allRecords  = await res.json();
 
   // 種目プルダウンを更新（重複なしで全種目を取得）
-  const syumokuList = [...new Set(allRecords.map(r => r.syumoku))];
+  const syumokuList = [...new Set(allRecords.map(function(r) { return r.syumoku; }))];
   const select      = document.getElementById('filter-exercise');
   const currentVal  = select.value;
   select.innerHTML  = '<option value="">種目を選択してください</option>';
-  syumokuList.forEach(s => {
+  syumokuList.forEach(function(s) {
     const opt      = document.createElement('option');
     opt.value      = s;
     opt.textContent = s;
@@ -106,7 +106,7 @@ function renderRecords() {
       document.getElementById('records-container').innerHTML = '<p style="color:#555;">日付を選択してください。</p>';
       return;
     }
-    const filtered = allRecords.filter(r => r.date === selectedDate);
+    const filtered = allRecords.filter(function(r) { return r.date === selectedDate; });
     renderByDate(filtered, selectedDate);
   } else {
     const selectedExercise = document.getElementById('filter-exercise').value;
@@ -114,7 +114,7 @@ function renderRecords() {
       document.getElementById('records-container').innerHTML = '<p style="color:#555;">種目を選択してください。</p>';
       return;
     }
-    const filtered = allRecords.filter(r => r.syumoku === selectedExercise);
+    const filtered = allRecords.filter(function(r) { return r.syumoku === selectedExercise; });
     renderByExercise(filtered, selectedExercise);
   }
 }
@@ -135,7 +135,7 @@ function renderByDate(records, date) {
   for (const syumoku in grouped) {
     html += `<div style="margin-bottom:14px;">`;
     html += `<div style="font-family:Oswald,sans-serif; font-size:11px; letter-spacing:2px; color:#555; margin-bottom:6px; padding-left:4px; text-transform:uppercase; border-left:2px solid #D4AF37; padding-left:8px;">${syumoku}</div>`;
-    grouped[syumoku].forEach(r => { html += recordItemHTML(r); });
+    grouped[syumoku].forEach(function(r) { html += recordItemHTML(r); });
     html += `</div>`;
   }
 
@@ -158,7 +158,7 @@ function renderByExercise(records, syumoku) {
   for (const date in grouped) {
     html += `<div class="record-group">`;
     html += `<div class="record-group-date">${formatDate(date)}</div>`;
-    grouped[date].forEach(r => { html += recordItemHTML(r); });
+    grouped[date].forEach(function(r) { html += recordItemHTML(r); });
     html += `</div>`;
   }
 
@@ -195,15 +195,15 @@ function renderCalendar() {
   // 日付 → training_type のマップを作成
   // 優先順位: ① 明示的に入力したtraining_type > ② 種目名から自動推定
   const recordsByDate = {};
-  allRecords.forEach(r => {
+  allRecords.forEach(function(r) {
     if (!recordsByDate[r.date]) recordsByDate[r.date] = [];
     recordsByDate[r.date].push(r);
   });
 
   const dateMap = {};
-  Object.entries(recordsByDate).forEach(([date, records]) => {
+  Object.entries(recordsByDate).forEach(function([date, records]) {
     // その日の記録の中に明示的なtraining_typeがあればそれを使う
-    const explicit = records.find(r => r.training_type && r.training_type !== '');
+    const explicit = records.find(function(r) { return r.training_type && r.training_type !== ''; });
     if (explicit) {
       dateMap[date] = explicit.training_type;
     } else {
@@ -227,13 +227,15 @@ function renderCalendar() {
 
   // 凡例HTML
   const legendHTML = Object.entries(TYPE_COLORS)
-    .filter(([k]) => k !== '')
-    .map(([k, v]) => `
-      <span style="display:inline-flex;align-items:center;gap:6px;margin-right:16px;">
-        <span style="width:14px;height:14px;background:${v.bg};display:inline-block;flex-shrink:0;"></span>
-        <span style="font-family:Oswald,sans-serif;font-size:11px;color:#888;letter-spacing:1px;">${v.label}</span>
-      </span>
-    `).join('');
+    .filter(function([k]) { return k !== ''; })
+    .map(function([k, v]) {
+      return `
+        <span style="display:inline-flex;align-items:center;gap:6px;margin-right:16px;">
+          <span style="width:14px;height:14px;background:${v.bg};display:inline-block;flex-shrink:0;"></span>
+          <span style="font-family:Oswald,sans-serif;font-size:11px;color:#888;letter-spacing:1px;">${v.label}</span>
+        </span>
+      `;
+    }).join('');
 
   // カレンダーセルを作成
   let cells = '';
@@ -298,7 +300,7 @@ function renderCalendar() {
         <button class="cal-nav" onclick="changeMonth(1)">NEXT ▶</button>
       </div>
       <div class="cal-legend">${legendHTML}</div>
-      <div class="cal-dow">${DAY_LABELS.map(l => `<div class="cal-dow-label">${l}</div>`).join('')}</div>
+      <div class="cal-dow">${DAY_LABELS.map(function(l) { return `<div class="cal-dow-label">${l}</div>`; }).join('')}</div>
       <div class="cal-grid">${cells}</div>
     </div>
   `;
@@ -315,7 +317,7 @@ function changeMonth(delta) {
 // カレンダーの日付をクリック → 日付ごとビューに切替
 function jumpToDate(dateStr) {
   // 日付ごとタブに切替
-  document.querySelectorAll('.filter-btn').forEach(b => {
+  document.querySelectorAll('.filter-btn').forEach(function(b) {
     b.classList.remove('active', 'btn-primary');
     b.classList.add('btn-secondary');
   });
@@ -336,7 +338,7 @@ function jumpToDate(dateStr) {
 
 // 配列を指定キーでグループ化
 function groupBy(array, key) {
-  return array.reduce((result, item) => {
+  return array.reduce(function(result, item) {
     const k = item[key];
     if (!result[k]) result[k] = [];
     result[k].push(item);
@@ -345,7 +347,7 @@ function groupBy(array, key) {
 }
 
 async function openEditModal(id) {
-  const record = allRecords.find(r => r.id === id);
+  const record = allRecords.find(function(r) { return r.id === id; });
   if (!record) return;
   document.getElementById('edit-id').value       = record.id;
   document.getElementById('edit-date').value     = record.date;
@@ -381,5 +383,5 @@ function formatDate(dateStr) {
 function showMessage(text, type) {
   const el = document.getElementById('message');
   el.innerHTML = `<div class="message ${type}">${text}</div>`;
-  setTimeout(() => { el.innerHTML = ''; }, 3000);
+  setTimeout(function() { el.innerHTML = ''; }, 3000);
 }

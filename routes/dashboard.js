@@ -9,7 +9,7 @@ const db      = require('../db');
 // GET /api/dashboard
 // ダッシュボードに必要な全データを一度に返す
 // -----------------------------------------------
-router.get('/', (req, res) => {
+router.get('/', function(req, res) {
 
   // 今日の日付を「YYYY-MM-DD」形式で取得
   const today = new Date().toISOString().split('T')[0];
@@ -31,7 +31,7 @@ router.get('/', (req, res) => {
   `).all(today);
 
   const todaySets   = todayRecords.length;
-  const todayVolume = todayRecords.reduce((sum, r) => sum + r.omosa * r.reps, 0);
+  const todayVolume = todayRecords.reduce(function(sum, r) { return sum + r.omosa * r.reps; }, 0);
 
   // ---------- 今週の曜日別トレーニング達成 ----------
   const weekRecords = db.prepare(`
@@ -39,7 +39,7 @@ router.get('/', (req, res) => {
     WHERE date >= ?
   `).all(mondayStr);
 
-  const weekDates = weekRecords.map(r => r.date); // トレーニングした日付の配列
+  const weekDates = weekRecords.map(function(r) { return r.date; }); // トレーニングした日付の配列
 
   // ---------- 今月のトレーニング ----------
   const monthRecords = db.prepare(`
@@ -48,8 +48,8 @@ router.get('/', (req, res) => {
   `).all(firstDayOfMonth);
 
   // 今月のトレーニング日数（重複なし）
-  const monthDays = new Set(monthRecords.map(r => r.date)).size;
-  const monthVolume = monthRecords.reduce((sum, r) => sum + r.omosa * r.reps, 0);
+  const monthDays = new Set(monthRecords.map(function(r) { return r.date; })).size;
+  const monthVolume = monthRecords.reduce(function(sum, r) { return sum + r.omosa * r.reps; }, 0);
 
   // ---------- 累計トレーニング日数 ----------
   const totalDaysRow = db.prepare(`
