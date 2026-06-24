@@ -1,15 +1,20 @@
 // ===== nav.js =====
 // 全ページ共通のナビゲーションを動的に挿入する
 
+const BASE = (function() {
+  const m = window.location.pathname.match(/^(\/[^/]+\/)/);
+  return m ? m[1] : '/';
+})();
+
 const NAV_LINKS = [
-  { href: '/index.html',   label: 'Dashboard' },
-  { href: '/input.html',   label: 'Record' },
-  { href: '/records.html', label: 'History' },
-  { href: '/graph.html',   label: 'Graph' },
-  { href: '/pr.html',      label: 'PR' },
-  { href: '/goals.html',   label: 'Goals' },
-  { href: '/poster.html',  label: 'Poster' },
-  { href: '/card.html',    label: 'Card' },
+  { href: BASE + 'index.html',   label: 'Dashboard' },
+  { href: BASE + 'input.html',   label: 'Record' },
+  { href: BASE + 'records.html', label: 'History' },
+  { href: BASE + 'graph.html',   label: 'Graph' },
+  { href: BASE + 'pr.html',      label: 'PR' },
+  { href: BASE + 'goals.html',   label: 'Goals' },
+  { href: BASE + 'poster.html',  label: 'Poster' },
+  { href: BASE + 'card.html',    label: 'Card' },
 ];
 
 document.addEventListener('DOMContentLoaded', function() {
