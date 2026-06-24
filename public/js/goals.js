@@ -1,10 +1,8 @@
 // ===== goals.js =====
-// 目標設定の追加・表示・削除と進捗表示を担当
 
 document.addEventListener('DOMContentLoaded', function() {
   loadGoals();
 
-  // 部位 → 種目の2段階選択
   document.getElementById('category-select').addEventListener('change', function(e) {
     const category       = e.target.value;
     const exerciseArea   = document.getElementById('exercise-select-area');
@@ -39,8 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('syumoku').value = e.target.value;
   });
 
-  // 目標追加フォームの送信
-  document.getElementById('goal-form').addEventListener('submit', async function(e) {
+  document.getElementById('goal-form').addEventListener('submit', function(e) {
     e.preventDefault();
 
     const data = {
@@ -49,36 +46,22 @@ document.addEventListener('DOMContentLoaded', function() {
       target_date   : document.getElementById('target_date').value,
     };
 
-    const res    = await fetch('/api/goals', {
-      method  : 'POST',
-      headers : { 'Content-Type': 'application/json' },
-      body    : JSON.stringify(data),
-    });
-    const result = await res.json();
-
-    showMessage(res.ok ? result.message : result.error, res.ok ? 'success' : 'error');
-
-    if (res.ok) {
-      document.getElementById('goal-form').reset();
-      loadGoals();
+    if (!data.syumoku || !data.target_weight || !data.target_date) {
+      showMessage('種目・目標重量・達成目標日は必須です', 'error');
+      return;
     }
+
+    DB.addGoal(data);
+    showMessage('目標を追加しました', 'success');
+    document.getElementById('goal-form').reset();
+    loadGoals();
   });
 });
 
-// -----------------------------------------------
-// 目標一覧を取得して表示する
-// -----------------------------------------------
-async function loadGoals() {
-  // 目標一覧とPR一覧を同時に取得する（Promise.all で並列リクエスト）
-  const [goalsRes, prRes] = await Promise.all([
-    fetch('/api/goals'),
-    fetch('/api/pr'),
-  ]);
-  const goals = await goalsRes.json();
-  const prs   = await prRes.json();
+function loadGoals() {
+  const goals = DB.getGoals();
+  const prs   = DB.getPR();
 
-  // PRをすばやく引けるように、種目名をキーにしたオブジェクトに変換
-  // 例: { 'ベンチプレス': { best_weight: 85, ... }, ... }
   const prMap = {};
   prs.forEach(function(pr) { prMap[pr.syumoku] = pr; });
 
@@ -93,16 +76,13 @@ async function loadGoals() {
 
   const html = goals.map(function(goal) {
     const pr          = prMap[goal.syumoku];
-    const currentPR   = pr ? pr.best_weight : 0;  // 現在のPR（なければ0）
-    const isAchieved  = currentPR >= goal.target_weight; // 目標達成しているか
-    const isExpired   = goal.target_date < today && !isAchieved; // 期限切れか
+    const currentPR   = pr ? pr.best_weight : 0;
+    const isAchieved  = currentPR >= goal.target_weight;
+    const isExpired   = goal.target_date < today && !isAchieved;
 
-    // 進捗を％で計算（目標を超えたら100%にする）
     const progressPct = Math.min(100, Math.round((currentPR / goal.target_weight) * 100));
 
-    const achievedHTML = isAchieved
-      ? `<span class="achieved-badge">ACHIEVED</span>`
-      : '';
+    const achievedHTML = isAchieved ? `<span class="achieved-badge">ACHIEVED</span>` : '';
     const expiredStyle = isExpired ? 'border-left: 2px solid #c0392b;' : 'border-left: 2px solid #1e1e1e;';
 
     return `
@@ -119,8 +99,6 @@ async function loadGoals() {
           </div>
           <button class="btn btn-danger" onclick="deleteGoal(${goal.id})">Delete</button>
         </div>
-
-        <!-- 進捗バー -->
         <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
           <span style="font-family:Oswald,sans-serif; font-size:10px; letter-spacing:1px; color:#555;">
             CURRENT PR &nbsp; ${currentPR}kg
@@ -139,17 +117,11 @@ async function loadGoals() {
   container.innerHTML = html;
 }
 
-// -----------------------------------------------
-// 目標を削除する
-// -----------------------------------------------
-async function deleteGoal(id) {
+function deleteGoal(id) {
   if (!confirm('この目標を削除しますか？')) return;
-
-  const res    = await fetch(`/api/goals/${id}`, { method: 'DELETE' });
-  const result = await res.json();
-
-  showMessage(res.ok ? result.message : result.error, res.ok ? 'success' : 'error');
-  if (res.ok) loadGoals();
+  const ok = DB.deleteGoal(id);
+  showMessage(ok ? '目標を削除しました' : '目標が見つかりませんでした', ok ? 'success' : 'error');
+  if (ok) loadGoals();
 }
 
 function showMessage(text, type) {

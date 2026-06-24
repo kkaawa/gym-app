@@ -1,13 +1,8 @@
 // ===== pr.js =====
-// パーソナルレコード（PR）一覧と種目別ボリュームグラフを担当
 
-document.addEventListener('DOMContentLoaded', async function() {
+document.addEventListener('DOMContentLoaded', function() {
+  const all = DB.getPR();
 
-  // サーバーから PR データを取得
-  const res = await fetch('/api/pr');
-  const all = await res.json();
-
-  // Big3（ベンチプレス・スクワット・デッドリフト）のみ表示
   const BIG3 = ['ベンチプレス', 'スクワット', 'デッドリフト'];
   const prs  = all.filter(function(pr) { return BIG3.includes(pr.syumoku); });
 
@@ -15,9 +10,6 @@ document.addEventListener('DOMContentLoaded', async function() {
   renderVolumeChart(prs);
 });
 
-// -----------------------------------------------
-// PRカードを一覧表示する
-// -----------------------------------------------
 function renderPRCards(prs) {
   const container = document.getElementById('pr-container');
 
@@ -44,9 +36,6 @@ function renderPRCards(prs) {
   container.innerHTML = html;
 }
 
-// -----------------------------------------------
-// 種目別の総ボリューム比較棒グラフを描画する
-// -----------------------------------------------
 function renderVolumeChart(prs) {
   const labels  = prs.map(function(pr) { return pr.syumoku; });
   const volumes = prs.map(function(pr) { return Math.round(pr.total_volume); });
